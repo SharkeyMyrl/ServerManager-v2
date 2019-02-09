@@ -210,11 +210,9 @@ namespace ServerManager
                 tabPage.BackColor = System.Drawing.Color.Cyan;
                 tabPage.Controls.Add(panel2);
                 tabPage.Controls.Add(panel1);
-                tabPage.Location = new System.Drawing.Point(4, 22);
                 tabPage.Name = "tabPage";
                 tabPage.Padding = new System.Windows.Forms.Padding(3);
                 tabPage.Size = new System.Drawing.Size(676, 411);
-                tabPage.TabIndex = 0;
                 tabPage.Text = name;
                 // 
                 // stop
@@ -437,25 +435,10 @@ namespace ServerManager
                 try { proc.Kill(); } catch { }
             }
         }
-        private TabPage tabPage;
-        private Button stop;
-        private Button start;
-        private CheckBox reboot;
-        private CheckBox notif;
-        private TextBox shutdown;
-        private CheckBox safeClose;
-        private TextBox address;
-        private TextBox file;
-        private Panel panel1;
+        
         private IContainer components;
         private ToolTip toolTip;
         private ToolStripMenuItem addSteamToolStripMenuItem;
-        private Panel panel2;
-        private CheckBox steamBox;
-        private TextBox SteamLabel;
-        private TextBox passw;
-        private CheckBox loginBox;
-        private TextBox user;
         private ToolStripMenuItem installGameToolStripMenuItem;
         private ToolStripMenuItem removeTabToolStripMenuItem;
         public object SteamInferface { get; private set; }
