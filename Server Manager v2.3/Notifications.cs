@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using static System.Console;
 using static ServerManager.SteamInterface;
 using static ServerManager.Manager;
 using System.Net.Mail;
-
 namespace ServerManager
 {
     partial class Notifications
@@ -23,11 +21,9 @@ namespace ServerManager
                 settings.prevTime = tmp.TimeOfDay.Seconds;
                 settings.prevYear = tmp.Year;
             }
-
             int dayDiff = settings.prevDay - tmp.DayOfYear;
             int timeDiff = settings.prevTime - tmp.TimeOfDay.Seconds;
             int yearDiff = settings.prevYear - tmp.Year;
-
             if (dayDiff == -1)
             {
                 if (timeDiff <= 2359 - delay)
@@ -38,7 +34,6 @@ namespace ServerManager
                 Notification(ref settings, 0);
                 return;
             }
-
             if (dayDiff == 0)
             {
                 if (timeDiff <= delay)
@@ -49,7 +44,6 @@ namespace ServerManager
                 Notification(ref settings, 0);
                 return;
             }
-
             if (yearDiff == -1)
             {
                 if (dayDiff == new DateTime(year: settings.prevYear, month: 12, day: 30).DayOfYear && timeDiff <= 2359 - delay)
@@ -85,7 +79,6 @@ namespace ServerManager
             }
         }
     }
-
     public struct NotifSettings
     {
         public String address { get; set; }
