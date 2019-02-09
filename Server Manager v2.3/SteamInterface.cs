@@ -17,6 +17,8 @@ namespace ServerManager
 {
     static partial class SteamInterface
     {
+        
+
         public static bool Install()
         {
             //Check if it is installed
@@ -36,11 +38,16 @@ namespace ServerManager
             ProcessStartInfo steam = new ProcessStartInfo();
             steam.Arguments = "+quit";
             steam.CreateNoWindow = false;
-            steam.WindowStyle = ProcessWindowStyle.Hidden;
+            steam.WindowStyle = ProcessWindowStyle.Normal;
             steam.FileName = @".\steamcmd\steamcmd.exe";
             Process.Start(steam);
             
             return true;
+        }
+
+        public static void Install(object sender, EventArgs e)
+        {
+            Install();
         }
 
         //Update Game and Mods
@@ -49,7 +56,7 @@ namespace ServerManager
             ProcessStartInfo steam = new ProcessStartInfo();
             steam.Arguments = "+login " +user+  " " +pass+ " +app_update " +game+ " +quit";
             steam.CreateNoWindow = false;
-            steam.WindowStyle = ProcessWindowStyle.Hidden;
+            steam.WindowStyle = ProcessWindowStyle.Normal;
             steam.FileName = @".\steamcmd\steamcmd.exe";
             return true;
         }

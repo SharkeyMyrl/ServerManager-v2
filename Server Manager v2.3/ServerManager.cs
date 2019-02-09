@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static ServerManager.SteamInterface;
 
 namespace ServerManager
 {
@@ -15,6 +16,16 @@ namespace ServerManager
         public ServerManager()
         {
             InitializeComponent();
+        }
+
+        private void ServerManager_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
