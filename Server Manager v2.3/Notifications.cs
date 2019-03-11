@@ -64,7 +64,7 @@ namespace ServerManager
                 SmtpClient client = new SmtpClient();
                 client.Port = 587;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                client.Credentials = new System.Net.NetworkCredential("sharkgaming.Notifications@gmail.com", "rootboot");
+                client.Credentials = new System.Net.NetworkCredential("sharkgaming.notifications@gmail.com", "rootboot");
                 client.UseDefaultCredentials = false;
                 client.Host = "smtp.gmail.com";
                 mail.To.Add(new MailAddress(settings.address)); // <-- this one

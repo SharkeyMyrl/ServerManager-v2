@@ -15,6 +15,8 @@ namespace ServerManager
     {
         [DllImport("user32.dll")]
         static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+        [DllImport("user32.dll")]
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
         public int i = 0;
         private Dictionary<int, Server> tabs = new Dictionary<int, Server>();
         private MenuStrip menuStrip;
@@ -38,9 +40,9 @@ namespace ServerManager
             this.toolStripTextBox = new System.Windows.Forms.ToolStripMenuItem();
             this.addSteamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.installGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.removeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,6 +55,7 @@ namespace ServerManager
             this.removeTabToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
+            this.menuStrip.ShowItemToolTips = true;
             this.menuStrip.Size = new System.Drawing.Size(684, 24);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip";
@@ -80,6 +83,14 @@ namespace ServerManager
             this.installGameToolStripMenuItem.ToolTipText = "Installs the current selected tabs steam game.";
             this.installGameToolStripMenuItem.Click += new System.EventHandler(this.TabInstall);
             // 
+            // removeTabToolStripMenuItem
+            // 
+            this.removeTabToolStripMenuItem.Name = "removeTabToolStripMenuItem";
+            this.removeTabToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
+            this.removeTabToolStripMenuItem.Text = "Delete Tab";
+            this.removeTabToolStripMenuItem.ToolTipText = "Deletes current tab.";
+            this.removeTabToolStripMenuItem.Click += new System.EventHandler(this.removeTab);
+            // 
             // tabControl
             // 
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -88,13 +99,6 @@ namespace ServerManager
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(684, 437);
             this.tabControl.TabIndex = 0;
-            // 
-            // removeTabToolStripMenuItem
-            // 
-            this.removeTabToolStripMenuItem.Name = "removeTabToolStripMenuItem";
-            this.removeTabToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
-            this.removeTabToolStripMenuItem.Text = "Delete Tab";
-            this.removeTabToolStripMenuItem.Click += new System.EventHandler(this.removeTab);
             // 
             // ServerManager
             // 
@@ -105,6 +109,7 @@ namespace ServerManager
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
+            this.MaximumSize = new System.Drawing.Size(700, 500);
             this.MinimumSize = new System.Drawing.Size(700, 500);
             this.Name = "ServerManager";
             this.Text = "Server Manager v2.0";
@@ -112,6 +117,7 @@ namespace ServerManager
             this.menuStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         private void removeTab(object sender, EventArgs e)
         {
@@ -190,8 +196,8 @@ namespace ServerManager
                 Button start = new System.Windows.Forms.Button();
                 CheckBox reboot = new System.Windows.Forms.CheckBox();
                 CheckBox notif = new System.Windows.Forms.CheckBox();
-                TextBox shutdown = new System.Windows.Forms.TextBox();
-                CheckBox safeClose = new System.Windows.Forms.CheckBox();
+                TextBox arguments = new System.Windows.Forms.TextBox();
+                CheckBox argumentsCheck = new System.Windows.Forms.CheckBox();
                 TextBox address = new System.Windows.Forms.TextBox();
                 TextBox file = new System.Windows.Forms.TextBox();
                 Panel panel1 = new System.Windows.Forms.Panel();
@@ -240,10 +246,11 @@ namespace ServerManager
                 reboot.AutoSize = true;
                 reboot.Location = new System.Drawing.Point(81, 53);
                 reboot.Name = "reboot";
-                reboot.Size = new System.Drawing.Size(56, 17);
+                reboot.Size = new System.Drawing.Size(90, 17);
                 reboot.TabIndex = 2;
-                reboot.Text = "reboot";
+                reboot.Text = "Auto Reboot";
                 reboot.UseVisualStyleBackColor = true;
+                toolTip.SetToolTip(reboot, "Should the server auto restart upon shutdown/crash?");
                 // 
                 // notif
                 // 
@@ -254,30 +261,34 @@ namespace ServerManager
                 notif.TabIndex = 4;
                 notif.Text = "Notifications";
                 notif.UseVisualStyleBackColor = true;
+                toolTip.SetToolTip(notif, "Do you want to get notifications on shutdown/crash/crashloop?");
                 // 
-                // shutdown
+                // arguments
                 // 
-                shutdown.Location = new System.Drawing.Point(186, 6);
-                shutdown.Name = "shutdown";
-                shutdown.Size = new System.Drawing.Size(100, 20);
-                shutdown.TabIndex = 8;
+                arguments.Location = new System.Drawing.Point(186, 30);
+                arguments.Name = "arguments";
+                arguments.Size = new System.Drawing.Size(100, 20);
+                arguments.TabIndex = 8;
+                toolTip.SetToolTip(arguments, "Arguments to pass to the server on start.");
                 // 
-                // safeClose
+                // argumentsCheck
                 // 
-                safeClose.AutoSize = true;
-                safeClose.Location = new System.Drawing.Point(81, 32);
-                safeClose.Name = "safeClose";
-                safeClose.Size = new System.Drawing.Size(99, 17);
-                safeClose.TabIndex = 3;
-                safeClose.Text = "Safe Shutdown";
-                safeClose.UseVisualStyleBackColor = true;
+                argumentsCheck.AutoSize = true;
+                argumentsCheck.Location = new System.Drawing.Point(81, 32);
+                argumentsCheck.Name = "argumentsCheck";
+                argumentsCheck.Size = new System.Drawing.Size(99, 17);
+                argumentsCheck.TabIndex = 3;
+                argumentsCheck.Text = "Arguments";
+                argumentsCheck.UseVisualStyleBackColor = true;
+                toolTip.SetToolTip(argumentsCheck, "Pass arguements to the server on start?");
                 // 
                 // address
                 // 
-                address.Location = new System.Drawing.Point(186, 30);
+                address.Location = new System.Drawing.Point(186, 6);
                 address.Name = "address";
                 address.Size = new System.Drawing.Size(100, 20);
                 address.TabIndex = 7;
+                toolTip.SetToolTip(address, "What email should the notification be sent to?\n Ex:\n sharkgaming.notifications@gmail.com\n ##########@mms.att.net");
                 // 
                 // file
                 // 
@@ -305,7 +316,7 @@ namespace ServerManager
                 steamBox.Size = new System.Drawing.Size(78, 17);
                 steamBox.TabIndex = 24;
                 steamBox.Text = "Use Steam";
-                toolTip.SetToolTip(steamBox, "Does server file download require login?");
+                toolTip.SetToolTip(steamBox, "Uses Steam?");
                 steamBox.UseVisualStyleBackColor = true;
                 // 
                 // SteamLabel
@@ -355,23 +366,23 @@ namespace ServerManager
                 panel2.Controls.Add(SteamLabel);
                 panel2.Controls.Add(passw);
                 panel2.Controls.Add(address);
-                panel2.Controls.Add(shutdown);
+                panel2.Controls.Add(arguments);
                 panel2.Controls.Add(loginBox);
                 panel2.Controls.Add(user);
-                panel2.Controls.Add(safeClose);
+                panel2.Controls.Add(argumentsCheck);
                 panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
                 panel2.Location = new System.Drawing.Point(3, 308);
                 panel2.Name = "panel2";
                 panel2.Size = new System.Drawing.Size(670, 100);
                 panel2.TabIndex = 3;
-                tabControl.SelectedIndex = tabControl.TabCount - 1;
+
                 tabs.Add(i++, new Server());
                 Tab tmp = new Tab();
                 tmp.tabPage = tabPage;
                 tmp.reboot = reboot;
                 tmp.notif = notif;
-                tmp.shutdown = shutdown;
-                tmp.safeClose = safeClose;
+                tmp.arguments = arguments;
+                tmp.argumentsCheck = argumentsCheck;
                 tmp.address = address;
                 tmp.file = file;
                 tmp.panel1 = panel1;
@@ -388,24 +399,32 @@ namespace ServerManager
         {
             ProcessStartInfo test = new ProcessStartInfo();
             //Execution of Processes and Monitoring of them
-            //test.RedirectStandardOutput = true;
             test.CreateNoWindow = false;
             test.FileName = tabs[name].tab.file.Text.Replace(@"\", @"\\");
             test.WorkingDirectory = Path.GetDirectoryName(test.FileName);
-            //test.Arguments = "-nogaphics -batchmode +secureserver/Server 1";
-            test.Verb = "runas";
-            test.WindowStyle = ProcessWindowStyle.Maximized;
-            //test.UseShellExecute = false;
-            Process proc = Process.Start(test);
-            Thread.Sleep(100);
-            Panel p = tabs[name].tab.panel1;
-            p.BeginInvoke((MethodInvoker)delegate () { SetParent(proc.MainWindowHandle, p.Handle); });
-            //tabs[name].richTextBox.Text = proc.StandardOutput.ReadToEnd();
-            tabs[name].id = proc.Id;
+            if (tabs[name].tab.argumentsCheck.CheckState == CheckState.Checked)
+            {
+                test.Arguments = tabs[name].tab.arguments.Text;
+            }
+            //test.Verb = "runas";
+            test.WindowStyle = ProcessWindowStyle.Minimized;
+            test.UseShellExecute = false;
+            Process proc = new Process();
+            proc.StartInfo = test;
             try
             {
-                while (true)
+                do
                 {
+                    proc.Start();
+                    Thread.Sleep(2000);
+                    Panel p = tabs[name].tab.panel1;
+                    var tmp = proc.MainWindowHandle;
+                    p.BeginInvoke((MethodInvoker)delegate () { SetParent(tmp, p.Handle); });
+                    //Thread.Sleep(2000);
+                    SetWindowPos(tmp, new IntPtr(0), -8, -30, 686, 343, 0x4000);
+
+                    tabs[name].id = proc.Id;
+                    Console.WriteLine("Waiting");
                     proc.WaitForExit();
                     if (tabs[name].tab.notif.CheckState == CheckState.Checked)
                     {
@@ -415,25 +434,15 @@ namespace ServerManager
                     {
                         break;
                     }
-                }
+                } while (true);
             }
             catch (ThreadAbortException e) //Catches if MainThread terminates childthread, for clean up before actually terminating
             {
+                Console.WriteLine("Abort Caught");
                 Thread.ResetAbort();
             }
-            if (tabs[name].tab.safeClose.CheckState == CheckState.Checked)
-            {
-                try
-                {
-                    proc.StandardInput.WriteLine(tabs[name].tab.shutdown.Text); //Should send the shutdown string to the game console
-                    proc.WaitForExit(60000);
-                }
-                catch { }
-            }
-            else
-            {
-                try { proc.Kill(); } catch { }
-            }
+            try { proc.Kill(); } catch { }
+            
         }
         
         private IContainer components;
@@ -455,8 +464,8 @@ namespace ServerManager
         public TabPage tabPage { get; set; }
         public CheckBox reboot { get; set; }
         public CheckBox notif { get; set; }
-        public TextBox shutdown { get; set; }
-        public CheckBox safeClose { get; set; }
+        public TextBox arguments { get; set; }
+        public CheckBox argumentsCheck { get; set; }
         public TextBox address { get; set; }
         public TextBox file { get; set; }
         public Panel panel1 { get; set; }
